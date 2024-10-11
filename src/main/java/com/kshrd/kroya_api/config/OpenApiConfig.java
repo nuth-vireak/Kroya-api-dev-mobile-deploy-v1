@@ -28,16 +28,16 @@ import io.swagger.v3.oas.annotations.servers.Server;
         ),
         servers = {
                 @Server(
+                        description = "PROD ENV",
+                        url = "https://kroya-api-dev-mobile-deploy-v1-production.up.railway.app/"
+                ),
+                @Server(
                         description = "Local ENV",
                         url = "http://localhost:8088/"
                 ),
                 @Server(
                         description = "Development ENV",
                         url = "http://110.74.194.123:6969"
-                ),
-                @Server(
-                        description = "PROD ENV",
-                        url = "https://aliboucoding.com/course"
                 )
         },
         security = {
