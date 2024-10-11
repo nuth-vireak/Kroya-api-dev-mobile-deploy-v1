@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
         servers = {
                 @Server(
                         description = "PROD ENV",
-                        url = "https://kroya-api-dev-mobile-deploy-v1-production.up.railway.app/"
+                        url = "https://kroya-api.up.railway.app/"
                 ),
                 @Server(
                         description = "Local ENV",
