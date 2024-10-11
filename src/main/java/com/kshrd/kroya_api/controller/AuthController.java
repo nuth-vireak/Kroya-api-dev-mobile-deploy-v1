@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     // Step 1: Check if Email Exist (for the first screen in your UI)
-    @PostMapping("/check-email-exist")
+    @GetMapping("/check-email-exist")
     public BaseResponse checkEmailExist(@RequestBody EmailRequest emailRequest) {
         return authenticationService.checkEmailExist(emailRequest);
     }
@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     // Step 1: Create Password
-    @PostMapping("/create-password")
+    @PostMapping("/register")
     public BaseResponse createPassword(@RequestBody PasswordRequest passwordRequest) {
         return authenticationService.createPassword(passwordRequest);
     }
