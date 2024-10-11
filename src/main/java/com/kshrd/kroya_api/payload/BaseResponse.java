@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class BaseResponse {
+public class    BaseResponse {
     private Object payload;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String inqCnt;
