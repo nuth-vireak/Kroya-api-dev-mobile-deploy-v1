@@ -1,0 +1,76 @@
+package com.kshrd.kroya_api.controller;
+
+import com.kshrd.kroya_api.payload.Auth.*;
+import com.kshrd.kroya_api.payload.BaseResponse;
+import com.kshrd.kroya_api.service.Auth.AuthenticationService;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+
+@RestController
+@RequestMapping("api/v1/auth")
+@AllArgsConstructor
+@Slf4j
+public class AuthController {
+
+    private final AuthenticationService authenticationService;
+
+    //    // User registration
+//    @PostMapping("/register")
+//    public BaseResponse register(@RequestBody RegisterRequest registerRequest) {
+//        return authenticationService.register(registerRequest);
+//    }
+
+    // Refresh token
+    @PostMapping("/refresh-token")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        authenticationService.refreshToken(request, response);
+    }
+
+    // Step 1: Check if Email Exist (for the first screen in your UI)
+    @PostMapping("/check-email-exist")
+    public BaseResponse checkEmailExist(@RequestBody EmailRequest emailRequest) {
+        return authenticationService.checkEmailExist(emailRequest);
+    }
+
+    // Step 2: Authenticate with Email and Password (for the second screen in your UI)
+    @PostMapping("/login")
+    public BaseResponse loginByEmailAndPassword(@RequestBody LoginRequest loginRequest) {
+        return authenticationService.loginByEmailAndPassword(loginRequest);
+    }
+
+    // Step 1: Send OTP for Email Verification
+    @PostMapping("/send-otp")
+    public BaseResponse sendOtp(@RequestBody EmailRequest emailRequest) throws MessagingException {
+        return authenticationService.generateOtp(emailRequest);
+    }
+
+    // Step 2: Validate OTP for Email Verification
+    @PostMapping("/validate-otp")
+    public BaseResponse validateOtp(@RequestParam String email, @RequestParam String otp) {
+        return authenticationService.validateOtp(email, otp);
+    }
+
+    // Step 1: Create Password
+    @PostMapping("/create-password")
+    public BaseResponse createPassword(@RequestBody PasswordRequest passwordRequest) {
+        return authenticationService.createPassword(passwordRequest);
+    }
+
+    // Step 2: Save Additional Information
+    @PostMapping("/save-user-info")
+    public BaseResponse saveUserInfo(@RequestBody UserInfoRequest userInfoRequest) {
+        return authenticationService.saveUserInfo(userInfoRequest);
+    }
+
+    // Forget Password: (Reset the Password after OTP verification)
+    @PostMapping("/reset-password")
+    public BaseResponse resetPassword(@RequestBody PasswordRequest passwordRequest) {
+        return authenticationService.resetPassword(passwordRequest);
+    }
+}
