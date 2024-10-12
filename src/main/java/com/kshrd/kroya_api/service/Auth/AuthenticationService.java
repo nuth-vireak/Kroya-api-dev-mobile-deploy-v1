@@ -26,6 +26,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -210,12 +211,12 @@ public class AuthenticationService {
     }
 
     // Generate OTP and save to CodeEntity
-    public BaseResponse generateOtp(EmailRequest emailRequest) throws MessagingException {
+    public BaseResponse generateOtp(String email) throws MessagingException {
 
-        var user = userRepository.findByEmail(emailRequest.getEmail());
+        var user = userRepository.findByEmail(email);
 
         // Check if OTP already exists for this email
-        CodeEntity codeEntity = codeRepository.findByEmail(emailRequest.getEmail());
+        CodeEntity codeEntity = codeRepository.findByEmail(email);
 
         // Generate 6-digit OTP
         String otp = String.format("%06d", new Random().nextInt(999999));
@@ -226,14 +227,14 @@ public class AuthenticationService {
 
         // If OTP already exists, update it; otherwise, create a new CodeEntity
         if (codeEntity != null) {
-            log.info("Updating existing OTP for email: {}", emailRequest.getEmail());
+            log.info("Updating existing OTP for email: {}", email);
             codeEntity.setPinCode(otp);
             codeEntity.setExpireDate(expiryDate);
             codeEntity.setCreateDate(now);
         } else {
-            log.info("Creating new OTP for email: {}", emailRequest.getEmail());
+            log.info("Creating new OTP for email: {}", email);
             codeEntity = new CodeEntity();
-            codeEntity.setEmail(emailRequest.getEmail());
+            codeEntity.setEmail(email);
             codeEntity.setPinCode(otp);
             codeEntity.setCreateDate(now);
             codeEntity.setExpireDate(expiryDate);
@@ -243,10 +244,10 @@ public class AuthenticationService {
         // Save the OTP code to the database
         codeRepository.save(codeEntity);
 
-        log.info("Generated OTP for email: {}, OTP: {}", emailRequest.getEmail(), otp);
+        log.info("Generated OTP for email: {}, OTP: {}", email, otp);
 
         // You can send the OTP to the user via email, SMS, etc. here.
-        emailService.sendEmail(emailRequest.getEmail(), otp);
+        emailService.sendEmail(email, otp);
 
         return BaseResponse.builder()
                 .message("OTP generated and sent successfully")

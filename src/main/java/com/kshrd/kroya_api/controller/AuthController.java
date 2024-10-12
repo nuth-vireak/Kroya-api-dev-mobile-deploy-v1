@@ -46,8 +46,8 @@ public class AuthController {
 
     // Step 1: Send OTP for Email Verification
     @PostMapping("/send-otp")
-    public BaseResponse sendOtp(@RequestBody EmailRequest emailRequest) throws MessagingException {
-        return authenticationService.generateOtp(emailRequest);
+    public BaseResponse sendOtp(@RequestParam String email) throws MessagingException {
+        return authenticationService.generateOtp(email);
     }
 
     // Step 2: Validate OTP for Email Verification
