@@ -34,7 +34,7 @@ public class AuthController {
 
     // Step 1: Check if Email Exist (for the first screen in your UI)
     @GetMapping("/check-email-exist")
-    public BaseResponse checkEmailExist(@RequestBody EmailRequest email) {
+    public BaseResponse checkEmailExist(@RequestParam String email) {
         return authenticationService.checkEmailExist(email);
     }
 

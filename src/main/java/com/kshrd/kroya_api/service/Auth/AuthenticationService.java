@@ -46,19 +46,19 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     // Step 1: Validate Email (for the first screen)
-    public BaseResponse checkEmailExist(EmailRequest emailRequest) {
+    public BaseResponse checkEmailExist(String email) {
 
-        log.debug("Checking email for validation: {}", emailRequest);
-        validation.ValidationEmail(emailRequest.getEmail());
+        log.debug("Checking email for validation: {}", email);
+        validation.ValidationEmail(email);
 
-        var userEntity = userRepository.findByEmail(emailRequest.getEmail());
+        var userEntity = userRepository.findByEmail(email);
 
         if (userEntity == null) {
-            log.warn("User not found for email: {}", emailRequest.getEmail());
+            log.warn("User not found for email: {}", email);
             throw new NotFoundExceptionHandler("User not found");
         }
 
-        log.info("Email found for: {}", emailRequest.getEmail());
+        log.info("Email found for: {}", email);
         return BaseResponse.builder()
                 .message("Email found, proceed to password input")
                 .code("200")
