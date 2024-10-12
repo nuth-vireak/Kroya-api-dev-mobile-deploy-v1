@@ -9,7 +9,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        if (AuthHelper.getUser()==null) {
+        if (AuthHelper.getUser() == null) {
             return Optional.of("system");
         }
         return Optional.ofNullable(AuthHelper.getUser().getUsername());

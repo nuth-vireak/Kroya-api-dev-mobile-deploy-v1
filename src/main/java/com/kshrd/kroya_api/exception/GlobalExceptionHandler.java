@@ -16,16 +16,16 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex , HttpHeaders headers, HttpStatusCode statusCode, WebRequest request){
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status",statusCode.value());
-        body.put("error",ex.getFieldError().getDefaultMessage());
-        return new ResponseEntity<>(body,statusCode);
+        body.put("status", statusCode.value());
+        body.put("error", ex.getFieldError().getDefaultMessage());
+        return new ResponseEntity<>(body, statusCode);
     }
 
     @ExceptionHandler(FieldEmptyExceptionHandler.class)
-    ProblemDetail handleFieldEmptyException(FieldEmptyExceptionHandler exceptionHandler){
+    ProblemDetail handleFieldEmptyException(FieldEmptyExceptionHandler exceptionHandler) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exceptionHandler.getMessage());
         problemDetail.setTitle("Field Is Empty Exception");
         problemDetail.setProperty("timestamp", Instant.now());
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundExceptionHandler.class)
-    ProblemDetail handleNotFoundException(NotFoundExceptionHandler exceptionHandler){
+    ProblemDetail handleNotFoundException(NotFoundExceptionHandler exceptionHandler) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exceptionHandler.getMessage());
         problemDetail.setTitle("Not Found Exception");
         problemDetail.setProperty("timestamp", Instant.now());
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateFieldExceptionHandler.class)
-    ProblemDetail handleDuplicationException(DuplicateFieldExceptionHandler exceptionHandler){
+    ProblemDetail handleDuplicationException(DuplicateFieldExceptionHandler exceptionHandler) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exceptionHandler.getMessage());
         problemDetail.setTitle("Field Duplicate Exception");
         problemDetail.setProperty("timestamp", Instant.now());
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UserDuplicateExceptionHandler.class)
-    ProblemDetail handleUerDuplicationException(UserDuplicateExceptionHandler exceptionHandler){
+    ProblemDetail handleUerDuplicationException(UserDuplicateExceptionHandler exceptionHandler) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exceptionHandler.getMessage());
         problemDetail.setTitle("User Duplicate Exception");
         problemDetail.setProperty("timestamp", Instant.now());
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @ExceptionHandler(InvalidValueExceptionHandler.class)
-    ProblemDetail handleInvalidException(InvalidValueExceptionHandler exceptionHandler){
+    ProblemDetail handleInvalidException(InvalidValueExceptionHandler exceptionHandler) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exceptionHandler.getMessage());
         problemDetail.setTitle("Invalid Exception");
         problemDetail.setProperty("timestamp", Instant.now());
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // Handle exception BadRequest
     @ExceptionHandler(BadRequestException.class)
-    ProblemDetail handleBadRequest(BadRequestException badRequestException){
+    ProblemDetail handleBadRequest(BadRequestException badRequestException) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, badRequestException.getMessage());
         return problemDetail;
     }

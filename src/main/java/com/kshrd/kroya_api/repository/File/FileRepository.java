@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service;
 
 @Repository
 @Service
-public interface FileRepository extends JpaRepository<FileEntity,Long> {
-FileEntity findByFileName(String filename);
+public interface FileRepository extends JpaRepository<FileEntity, Long> {
+    FileEntity findByFileName(String filename);
 }

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FileResponse<T> {
-    private  String message;
-    private  int status;
-    private  T payload;
+    private String message;
+    private int status;
+    private T payload;
 }

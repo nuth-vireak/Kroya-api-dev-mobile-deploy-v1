@@ -12,13 +12,15 @@ public class FileEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "url")
     private String url;
 
     @Column(name = "filename")
     private String fileName;
 
-    public FileEntity(){}
+    public FileEntity() {
+    }
 
     public FileEntity(String url, String fileName) {
         this.url = url;

@@ -16,9 +16,9 @@ public enum ResponseMessage implements IResponseMessage {
     INVALID_TOKEN("005", "Invalid token"),
     TOKEN_EXPIRED("006", "Token expired"),
     UNSUPPORTED_TOKEN("007", "Unsupported token"),
-    NOTAUTHORIZED("003","NOT YET AUTHORIZED!"),
-    CHECKPHONENUMBER("009","PHONE NUMBER HAVE ALREADY"),
-    PASSWORD_NOT_MATCH("010","PASSWORD NOT MATCH");
+    NOTAUTHORIZED("003", "NOT YET AUTHORIZED!"),
+    CHECKPHONENUMBER("009", "PHONE NUMBER HAVE ALREADY"),
+    PASSWORD_NOT_MATCH("010", "PASSWORD NOT MATCH");
     private final String code;
     private final String message;
 }

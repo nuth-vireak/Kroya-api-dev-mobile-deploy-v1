@@ -52,7 +52,7 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers(
                                 "/api/v1/user",
-                                "/api/v1/purchase",
+                                "/api/v1/recipe",
                                 "/api/v1/countView",
                                 "/api/v1/item",
                                 "/api/v1/notification",

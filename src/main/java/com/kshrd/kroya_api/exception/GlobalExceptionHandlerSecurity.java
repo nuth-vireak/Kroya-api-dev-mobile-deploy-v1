@@ -18,7 +18,7 @@ import java.util.Arrays;
 public class GlobalExceptionHandlerSecurity {
 
     @ExceptionHandler(CustomExceptionSecurity.class)
-    public Object customerException(CustomExceptionSecurity ex){
+    public Object customerException(CustomExceptionSecurity ex) {
 
         return BaseResponse.builder()
                 .message(ex.getMessage())
@@ -28,7 +28,7 @@ public class GlobalExceptionHandlerSecurity {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public Object authenticationException(AuthenticationException ex){
+    public Object authenticationException(AuthenticationException ex) {
 
         return BaseResponse.builder()
                 .message(ex.getMessage())
@@ -40,13 +40,13 @@ public class GlobalExceptionHandlerSecurity {
     //Enum validation
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public Object handleJsonErrors(HttpMessageNotReadableException ex){
+    public Object handleJsonErrors(HttpMessageNotReadableException ex) {
 
         String message = ex.getMessage();
         if (ex.getCause() != null && ex.getCause() instanceof InvalidFormatException) {
             message = ((InvalidFormatException) ex.getCause()).getPath().get(0).getFieldName();
             message += ": '" + ((InvalidFormatException) ex.getCause()).getValue();
-            message += "'는 다음 " + Arrays.toString(((InvalidFormatException) ex.getCause()).getTargetType().getEnumConstants())+"가 아닙니다";
+            message += "'는 다음 " + Arrays.toString(((InvalidFormatException) ex.getCause()).getTargetType().getEnumConstants()) + "가 아닙니다";
         }
         return BaseResponse.builder()
                 .message(message)
@@ -57,15 +57,15 @@ public class GlobalExceptionHandlerSecurity {
 
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public Object illegalArgumentHandle(IllegalArgumentException ex){
+    public Object illegalArgumentHandle(IllegalArgumentException ex) {
         return BaseResponse.builder()
                 .message(ex.getMessage())
                 .isError(true)
                 .build();
     }
 
-    @ExceptionHandler (ConstraintViolationException.class)
-    public Object constraintViolationHandle(ConstraintViolationException ex){
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Object constraintViolationHandle(ConstraintViolationException ex) {
         return BaseResponse.builder()
                 .message(ex.getMessage())
                 .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
@@ -85,12 +85,12 @@ public class GlobalExceptionHandlerSecurity {
     //Json Validation
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public BaseResponse methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException ex){
+    public BaseResponse methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException ex) {
 
         StringBuilder message = new StringBuilder();
-        for(int i=0; i<ex.getBindingResult().getFieldErrors().size(); i++){
+        for (int i = 0; i < ex.getBindingResult().getFieldErrors().size(); i++) {
             message.append("[").append(ex.getBindingResult().getFieldErrors().get(i).getField()).append("]").append(ex.getBindingResult().getFieldErrors().get(i).getDefaultMessage());
-            if(i != ex.getBindingResult().getFieldErrors().size()-1){
+            if (i != ex.getBindingResult().getFieldErrors().size() - 1) {
                 message.append(", ");
             }
         }

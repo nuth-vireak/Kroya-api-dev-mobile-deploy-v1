@@ -66,6 +66,10 @@ public class UserEntity implements UserDetails {
     @JsonIgnore
     private CodeEntity code;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<RecipeEntity> product;
+
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {

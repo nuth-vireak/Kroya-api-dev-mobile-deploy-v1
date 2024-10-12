@@ -1,6 +1,8 @@
 package com.kshrd.kroya_api.controller;
 
-import com.kshrd.kroya_api.payload.Auth.*;
+import com.kshrd.kroya_api.payload.Auth.LoginRequest;
+import com.kshrd.kroya_api.payload.Auth.PasswordRequest;
+import com.kshrd.kroya_api.payload.Auth.UserInfoRequest;
 import com.kshrd.kroya_api.payload.BaseResponse;
 import com.kshrd.kroya_api.service.Auth.AuthenticationService;
 import jakarta.mail.MessagingException;
@@ -19,12 +21,6 @@ import java.io.IOException;
 public class AuthController {
 
     private final AuthenticationService authenticationService;
-
-    //    // User registration
-//    @PostMapping("/register")
-//    public BaseResponse register(@RequestBody RegisterRequest registerRequest) {
-//        return authenticationService.register(registerRequest);
-//    }
 
     // Refresh token
     @PostMapping("/refresh-token")
@@ -74,3 +70,4 @@ public class AuthController {
         return authenticationService.resetPassword(passwordRequest);
     }
 }
+

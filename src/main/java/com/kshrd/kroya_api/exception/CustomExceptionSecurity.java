@@ -7,6 +7,7 @@ public class CustomExceptionSecurity extends RuntimeException {
     public CustomExceptionSecurity() {
         super("Custom Exception");
     }
+
     public CustomExceptionSecurity(String message) {
         super(message);
     }
@@ -15,8 +16,8 @@ public class CustomExceptionSecurity extends RuntimeException {
         super(resMsgInterface.getMessage(), new Throwable(resMsgInterface.getCode()));
     }
 
-    public CustomExceptionSecurity(String msgCode, String message){
-        super(msgCode + " : "+message);
+    public CustomExceptionSecurity(String msgCode, String message) {
+        super(msgCode + " : " + message);
     }
 
 }

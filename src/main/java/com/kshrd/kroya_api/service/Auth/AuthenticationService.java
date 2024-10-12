@@ -26,7 +26,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -396,50 +395,4 @@ public class AuthenticationService {
                 .code("200")
                 .build();
     }
-
-
-    //    public BaseResponse register(RegisterRequest request) {
-//
-//        log.debug("Registering new user with email: {}", request.getEmail());
-//        validation.ValidationEmail(request.getEmail());
-//
-//        if (!request.getPassword().equals(request.getConfirmPassword())) {
-//            log.warn("Passwords do not match for email: {}", request.getEmail());
-//            throw new CustomExceptionSecurity(ResponseMessage.PASSWORD_NOT_MATCH);
-//        }
-//
-//        if (userRepository.findByEmail(request.getEmail()) == null) {
-//            var user = UserEntity.builder()
-//                    .email(request.getEmail())
-//                    .password(passwordEncoder.encode(request.getPassword()))
-//                    .userName(request.getUserName())
-//                    .phoneNumber(request.getPhoneNumber())
-//                    .location(request.getLocation())
-//                    .createdAt(LocalDateTime.now())
-//                    .role("ROLE_USER")
-//                    .build();
-//
-//            var savedUser = userRepository.save(user);
-//
-//            log.info("New user registered with email: {}", request.getEmail());
-//
-//            var jwtToken = jwtService.generateToken(user);
-//            var refreshToken = jwtService.generateRefreshToken(user);
-//
-//            saveUserToken(savedUser, jwtToken);
-//
-//            return BaseResponse.builder()
-//                    .payload(AuthenticationResponse.builder()
-//                            .accessToken(jwtToken)
-//                            .refreshToken(refreshToken)
-//                            .build())
-//                    .build();
-//        } else {
-//            log.warn("User with email: {} already exists", request.getEmail());
-//            AuthenticationRequest authenticationRequest = new AuthenticationRequest();
-//            authenticationRequest.setEmail(request.getEmail());
-//            authenticationRequest.setPassword(request.getPassword());
-//            return authenticate(authenticationRequest);
-//        }
-//    }
 }
