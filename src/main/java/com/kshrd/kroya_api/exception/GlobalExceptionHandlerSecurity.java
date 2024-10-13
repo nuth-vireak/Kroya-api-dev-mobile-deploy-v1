@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.naming.AuthenticationException;
 import java.util.Arrays;
+import java.util.Date;
 
 
 @RestControllerAdvice
@@ -22,8 +23,8 @@ public class GlobalExceptionHandlerSecurity {
 
         return BaseResponse.builder()
                 .message(ex.getMessage())
-                .code(ex.getCause().getMessage())
-                .isError(true)
+                .statusCode(ex.getCause().getMessage())
+                .timestamp(new Date())
                 .build();
     }
 
@@ -32,8 +33,8 @@ public class GlobalExceptionHandlerSecurity {
 
         return BaseResponse.builder()
                 .message(ex.getMessage())
-                .code(String.valueOf(HttpStatus.UNAUTHORIZED.value()))
-                .isError(true)
+                .statusCode(String.valueOf(HttpStatus.UNAUTHORIZED.value()))
+                .timestamp(new Date())
                 .build();
     }
 
@@ -50,8 +51,8 @@ public class GlobalExceptionHandlerSecurity {
         }
         return BaseResponse.builder()
                 .message(message)
-                .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
-                .isError(true)
+                .statusCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                .timestamp(new Date())
                 .build();
     }
 
@@ -60,7 +61,7 @@ public class GlobalExceptionHandlerSecurity {
     public Object illegalArgumentHandle(IllegalArgumentException ex) {
         return BaseResponse.builder()
                 .message(ex.getMessage())
-                .isError(true)
+                .timestamp(new Date())
                 .build();
     }
 
@@ -68,8 +69,8 @@ public class GlobalExceptionHandlerSecurity {
     public Object constraintViolationHandle(ConstraintViolationException ex) {
         return BaseResponse.builder()
                 .message(ex.getMessage())
-                .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
-                .isError(true)
+                .statusCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                .timestamp(new Date())
                 .build();
     }
 
@@ -97,8 +98,8 @@ public class GlobalExceptionHandlerSecurity {
 
         return BaseResponse.builder()
                 .message(message.toString())
-                .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
-                .isError(true)
+                .statusCode(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                .timestamp(new Date())
                 .build();
     }
 

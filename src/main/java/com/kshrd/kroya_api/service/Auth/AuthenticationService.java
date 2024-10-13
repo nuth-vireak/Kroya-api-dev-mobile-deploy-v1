@@ -61,7 +61,7 @@ public class AuthenticationService {
         log.info("Email found for: {}", email);
         return BaseResponse.builder()
                 .message("Email found, proceed to password input")
-                .code("200")
+                .statusCode("200")
                 .build();
     }
 
@@ -249,8 +249,9 @@ public class AuthenticationService {
         emailService.sendEmail(email, otp);
 
         return BaseResponse.builder()
+                .payload("Email: " + email + ", OTP: " + otp)
                 .message("OTP generated and sent successfully")
-                .code("200")
+                .statusCode("200")
                 .build();
     }
 
@@ -260,19 +261,19 @@ public class AuthenticationService {
 
         if (codeEntity == null) {
             log.warn("OTP not found for email: {}", email);
-            return BaseResponse.builder().message("OTP not found").code("404").build();
+            return BaseResponse.builder().message("OTP not found").statusCode("404").build();
         }
 
         // Check if the OTP has expired
         if (LocalDateTime.now().isAfter(codeEntity.getExpireDate())) {
             log.warn("OTP expired for email: {}", email);
-            return BaseResponse.builder().message("OTP expired").code("400").build();
+            return BaseResponse.builder().message("OTP expired").statusCode("400").build();
         }
 
         // Check if the OTP matches
         if (!codeEntity.getPinCode().equals(otp)) {
             log.warn("Invalid OTP for email: {}", email);
-            return BaseResponse.builder().message("Invalid OTP").code("400").build();
+            return BaseResponse.builder().message("Invalid OTP").statusCode("400").build();
         }
 
         // OTP is valid, proceed to create the user
@@ -305,7 +306,7 @@ public class AuthenticationService {
         }
 
         log.info("OTP validated and email verified for email: {}", email);
-        return BaseResponse.builder().message("OTP validated and email verified").code("200").build();
+        return BaseResponse.builder().message("OTP validated and email verified").statusCode("200").build();
     }
 
     public BaseResponse createPassword(PasswordRequest passwordRequest) {
@@ -339,7 +340,7 @@ public class AuthenticationService {
 
         return BaseResponse.builder()
                 .message("Password created successfully")
-                .code("200")
+                .statusCode("200")
                 .payload(AuthenticationResponse.builder()
                         .accessToken(jwtToken)
                         .refreshToken(refreshToken)
@@ -365,7 +366,7 @@ public class AuthenticationService {
 
         return BaseResponse.builder()
                 .message("User information saved successfully")
-                .code("200")
+                .statusCode("200")
                 .build();
     }
 
@@ -392,7 +393,7 @@ public class AuthenticationService {
 
         return BaseResponse.builder()
                 .message("Password reset successfully")
-                .code("200")
+                .statusCode("200")
                 .build();
     }
 }

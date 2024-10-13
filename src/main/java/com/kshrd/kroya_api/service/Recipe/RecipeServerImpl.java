@@ -64,7 +64,7 @@ public class RecipeServerImpl implements RecipeService {
         return BaseResponse.builder()
                 .payload(recipeResponse)
                 .message("Recipe created successfully")
-                .code("201")
+                .statusCode("201")
                 .build();
     }
 }

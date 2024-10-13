@@ -7,6 +7,8 @@ import com.kshrd.kroya_api.enums.ResponseMessage;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
+
 @Builder
 @Data
 public class BaseResponse {
@@ -22,14 +24,14 @@ public class BaseResponse {
 
     private String message;
 
-    private String code;
+    private String statusCode;
+
+    @Builder.Default
+    private Date timestamp = new Date();
 
     @JsonIgnore
     @Builder.Default
     private IResponseMessage responseMessage = ResponseMessage.OK;
-
-    @Builder.Default
-    private boolean isError = false;
 
     @JsonIgnore
     private org.springframework.data.domain.Page<?> rawData;
@@ -42,9 +44,9 @@ public class BaseResponse {
         return null;
     }
 
-    public String getCode() {
-        if (this.code != null)
-            return this.code;
+    public String getStatusCode() {
+        if (this.statusCode != null)
+            return this.statusCode;
         if (this.responseMessage != null)
             return this.responseMessage.getCode();
         return null;

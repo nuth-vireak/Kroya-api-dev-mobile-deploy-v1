@@ -134,7 +134,6 @@ public class JwtService {
             res.getServletResponse().setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
             logger.info("JWT Exception Handler : {}", msg.getMessage());
             res.getBody().write(mapper.writeValueAsString(BaseResponse.builder()
-                    .isError(true)
                     .responseMessage(msg).build()).getBytes());
         } catch (Exception e) {
             logger.error(e.getMessage());
