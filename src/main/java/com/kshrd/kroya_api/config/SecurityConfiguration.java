@@ -38,6 +38,8 @@ public class SecurityConfiguration {
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/v1/fileView/**",
+                                "/api/v1/category/**",
+                                "/api/v1/cuisine/**",
                                 "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -52,7 +54,8 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers(
                                 "/api/v1/user",
-                                "/api/v1/recipe",
+                                "/api/v1/food-recipe/**",
+                                "/api/v1/food-sell/**",
                                 "/api/v1/countView",
                                 "/api/v1/item",
                                 "/api/v1/notification",

@@ -30,7 +30,7 @@ public class UserEntity implements UserDetails {
     private Integer userId;
 
     @Column(name = "user_name", length = 250, nullable = true)
-    private String userName;
+    private String fullName;
 
     @Column(name = "email", length = 100, unique = true)
     private String email;
@@ -68,7 +68,7 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<RecipeEntity> product;
+    private List<FoodRecipeEntity> product;
 
     @Override
     @JsonIgnore

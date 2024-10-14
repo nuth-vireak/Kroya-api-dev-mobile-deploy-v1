@@ -1,7 +1,9 @@
 package com.kshrd.kroya_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kshrd.kroya_api.payload.Recipe.Ingredient;
+import com.kshrd.kroya_api.payload.FoodRecipe.CookingStep;
+import com.kshrd.kroya_api.payload.FoodRecipe.Ingredient;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -16,8 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "recipe_tb")
-public class RecipeEntity {
+@Table(name = "food_recipe_tb")
+public class FoodRecipeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,21 +41,16 @@ public class RecipeEntity {
     @Column(name = "level", length = 50)
     private String level;
 
-    @Column(name = "cuisine", length = 50)
-    private String cuisine;
-
-    @Column(name = "category", length = 50)
-    private String category;
-
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "ingredients", columnDefinition = "jsonb")
     private List<Ingredient> ingredients;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "cooking_steps", columnDefinition = "jsonb")
+    private List<CookingStep> cookingSteps;
+
     @Column(name = "is_for_sale")
     private Boolean isForSale;
-
-    @Column(name = "cooking_steps")
-    private String cookingSteps;
 
     @Column(name = "total_raters")
     private Integer totalRaters;
@@ -68,4 +65,14 @@ public class RecipeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UserEntity user;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    @JsonIgnore
+    private CategoryEntity category;
+
+    @ManyToOne
+    @JoinColumn(name = "cuisine_id")
+    @JsonIgnore
+    private CuisineEntity cuisine;
 }

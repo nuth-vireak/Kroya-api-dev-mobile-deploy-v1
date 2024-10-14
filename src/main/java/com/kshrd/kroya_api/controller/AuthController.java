@@ -30,43 +30,43 @@ public class AuthController {
 
     // Step 1: Check if Email Exist (for the first screen in your UI)
     @GetMapping("/check-email-exist")
-    public BaseResponse checkEmailExist(@RequestParam String email) {
+    public BaseResponse<?> checkEmailExist(@RequestParam String email) {
         return authenticationService.checkEmailExist(email);
     }
 
     // Step 2: Authenticate with Email and Password (for the second screen in your UI)
     @PostMapping("/login")
-    public BaseResponse loginByEmailAndPassword(@RequestBody LoginRequest loginRequest) {
+    public BaseResponse<?> loginByEmailAndPassword(@RequestBody LoginRequest loginRequest) {
         return authenticationService.loginByEmailAndPassword(loginRequest);
     }
 
     // Step 1: Send OTP for Email Verification
     @PostMapping("/send-otp")
-    public BaseResponse sendOtp(@RequestParam String email) throws MessagingException {
+    public BaseResponse<?> sendOtp(@RequestParam String email) throws MessagingException {
         return authenticationService.generateOtp(email);
     }
 
     // Step 2: Validate OTP for Email Verification
     @PostMapping("/validate-otp")
-    public BaseResponse validateOtp(@RequestParam String email, @RequestParam String otp) {
+    public BaseResponse<?> validateOtp(@RequestParam String email, @RequestParam String otp) {
         return authenticationService.validateOtp(email, otp);
     }
 
     // Step 1: Create Password
     @PostMapping("/register")
-    public BaseResponse createPassword(@RequestBody PasswordRequest passwordRequest) {
+    public BaseResponse<?> createPassword(@RequestBody PasswordRequest passwordRequest) {
         return authenticationService.createPassword(passwordRequest);
     }
 
     // Step 2: Save Additional Information
     @PostMapping("/save-user-info")
-    public BaseResponse saveUserInfo(@RequestBody UserInfoRequest userInfoRequest) {
+    public BaseResponse<?> saveUserInfo(@RequestBody UserInfoRequest userInfoRequest) {
         return authenticationService.saveUserInfo(userInfoRequest);
     }
 
     // Forget Password: (Reset the Password after OTP verification)
     @PostMapping("/reset-password")
-    public BaseResponse resetPassword(@RequestBody PasswordRequest passwordRequest) {
+    public BaseResponse<?> resetPassword(@RequestBody PasswordRequest passwordRequest) {
         return authenticationService.resetPassword(passwordRequest);
     }
 }

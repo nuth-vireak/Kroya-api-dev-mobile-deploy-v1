@@ -86,7 +86,7 @@ public class GlobalExceptionHandlerSecurity {
     //Json Validation
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public BaseResponse methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException ex) {
+    public BaseResponse<?> methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException ex) {
 
         StringBuilder message = new StringBuilder();
         for (int i = 0; i < ex.getBindingResult().getFieldErrors().size(); i++) {

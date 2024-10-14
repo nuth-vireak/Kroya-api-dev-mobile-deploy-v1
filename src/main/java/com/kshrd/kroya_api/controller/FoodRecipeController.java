@@ -1,8 +1,8 @@
 package com.kshrd.kroya_api.controller;
 
 import com.kshrd.kroya_api.payload.BaseResponse;
-import com.kshrd.kroya_api.payload.Recipe.RecipeRequest;
-import com.kshrd.kroya_api.service.Recipe.RecipeService;
+import com.kshrd.kroya_api.payload.FoodRecipe.FoodRecipeRequest;
+import com.kshrd.kroya_api.service.FoodRecipe.FoodRecipeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/v1/recipe")
+@RequestMapping("api/v1/food-recipe")
 @RequiredArgsConstructor
 @Slf4j
-public class RecipeController {
+public class FoodRecipeController {
 
-    private final RecipeService recipeService;
+    private final FoodRecipeService foodRecipeService;
 
-    @PostMapping("/post-recipe")
-    public BaseResponse createRecipe(@RequestBody RecipeRequest recipeRequest) {
-        return recipeService.createRecipe(recipeRequest);
+    @PostMapping("/post-food-recipe")
+    public BaseResponse<?> createRecipe(@RequestBody FoodRecipeRequest foodRecipeRequest) {
+        return foodRecipeService.createRecipe(foodRecipeRequest);
     }
 
 }

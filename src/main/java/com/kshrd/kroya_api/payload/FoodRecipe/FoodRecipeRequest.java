@@ -1,28 +1,23 @@
-package com.kshrd.kroya_api.payload.Recipe;
+package com.kshrd.kroya_api.payload.FoodRecipe;
 
-import com.kshrd.kroya_api.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeResponse {
-    private Integer id;
+public class FoodRecipeRequest {
     private String photoUrl;
     private String name;
     private String description;
     private Integer durationInMinutes;
     private String level;
-    private String cuisine;
-    private String category;
+    private Long cuisineId;
+    private Long categoryId;
     private List<Ingredient> ingredients;
-    private String cookingSteps;
+    private List<CookingStep> cookingSteps;
     private Boolean isForSale;
-    private LocalDateTime createdAt;
-    private UserDTO user;
 }

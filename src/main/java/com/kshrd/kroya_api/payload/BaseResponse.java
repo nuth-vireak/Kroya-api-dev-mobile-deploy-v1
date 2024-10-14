@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Builder
 @Data
-public class BaseResponse {
+public class BaseResponse<T> {
 
     @Builder.Default
     private Object payload = "No data available";

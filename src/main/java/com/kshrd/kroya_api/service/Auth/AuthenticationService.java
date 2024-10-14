@@ -46,7 +46,7 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     // Step 1: Validate Email (for the first screen)
-    public BaseResponse checkEmailExist(String email) {
+    public BaseResponse<?> checkEmailExist(String email) {
 
         log.debug("Checking email for validation: {}", email);
         validation.ValidationEmail(email);
@@ -66,7 +66,7 @@ public class AuthenticationService {
     }
 
     // Step 2: Authenticate Email and Password (for the second screen)
-    public BaseResponse loginByEmailAndPassword(LoginRequest loginRequest) {
+    public BaseResponse<?> loginByEmailAndPassword(LoginRequest loginRequest) {
 
         log.debug("Validating login request for email: {}", loginRequest.getEmail());
         validation.ValidationEmail(loginRequest.getEmail());
@@ -92,7 +92,7 @@ public class AuthenticationService {
     }
 
     // Helper method to authenticate and generate tokens
-    private BaseResponse authenticate(AuthenticationRequest request) {
+    private BaseResponse<?> authenticate(AuthenticationRequest request) {
 
         log.debug("Authenticating user: {}", request.getEmail());
         var user = userRepository.findByEmail(request.getEmail());
@@ -210,7 +210,7 @@ public class AuthenticationService {
     }
 
     // Generate OTP and save to CodeEntity
-    public BaseResponse generateOtp(String email) throws MessagingException {
+    public BaseResponse<?> generateOtp(String email) throws MessagingException {
 
         var user = userRepository.findByEmail(email);
 
@@ -255,7 +255,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public BaseResponse validateOtp(String email, String otp) {
+    public BaseResponse<?> validateOtp(String email, String otp) {
         // Find the OTP code by email
         var codeEntity = codeRepository.findByEmail(email);
 
@@ -285,7 +285,7 @@ public class AuthenticationService {
             UserEntity newUser = new UserEntity();
             newUser.setEmail(email);
             newUser.setPassword(passwordEncoder.encode("default_password"));
-            newUser.setUserName("");
+            newUser.setFullName("");
             newUser.setPhoneNumber("");
             newUser.setLocation("");
             newUser.setEmailVerified(true);
@@ -309,7 +309,7 @@ public class AuthenticationService {
         return BaseResponse.builder().message("OTP validated and email verified").statusCode("200").build();
     }
 
-    public BaseResponse createPassword(PasswordRequest passwordRequest) {
+    public BaseResponse<?> createPassword(PasswordRequest passwordRequest) {
         log.debug("Create password for email: {}", passwordRequest.getEmail());
 
         // Validate password and confirm password
@@ -348,7 +348,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public BaseResponse saveUserInfo(UserInfoRequest userInfoRequest) {
+    public BaseResponse<?> saveUserInfo(UserInfoRequest userInfoRequest) {
         log.debug("Saving additional info for email: {}", userInfoRequest.getEmail());
 
         // Find user by email
@@ -358,7 +358,7 @@ public class AuthenticationService {
         }
 
         // Update the user's additional information
-        user.setUserName(userInfoRequest.getUserName());
+        user.setFullName(userInfoRequest.getUserName());
         user.setPhoneNumber(userInfoRequest.getPhoneNumber());
         user.setLocation(userInfoRequest.getAddress());
 
@@ -370,7 +370,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public BaseResponse resetPassword(PasswordRequest passwordRequest) {
+    public BaseResponse<?> resetPassword(PasswordRequest passwordRequest) {
 
         log.info("Processing reset password for email: {}", passwordRequest.getEmail());
 
