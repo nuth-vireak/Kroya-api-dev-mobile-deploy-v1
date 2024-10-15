@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,7 +23,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity
+@EnableMethodSecurity(securedEnabled = true)
 //@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class SecurityConfiguration {
 
@@ -38,8 +39,6 @@ public class SecurityConfiguration {
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/v1/fileView/**",
-                                "/api/v1/category/**",
-                                "/api/v1/cuisine/**",
                                 "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -52,20 +51,30 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html"
                         )
                         .permitAll()
-                        .requestMatchers(
-                                "/api/v1/user",
-                                "/api/v1/food-recipe/**",
-                                "/api/v1/food-sell/**",
-                                "/api/v1/countView",
-                                "/api/v1/item",
-                                "/api/v1/notification",
-                                "/api/v1/collection",
-                                "/api/v1/category",
-                                "/api/v1/bookmark",
-                                "/api/v1/address"
-                        ).hasRole("USER")
-                        .anyRequest()
-                        .authenticated())
+
+                        // Address controller
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/address/update/{id}").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/address/create").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/address/{id}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/address/list").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/address/delete/{id}").hasRole("USER")
+
+                        // Food sell controller
+                        .requestMatchers(HttpMethod.POST, "/api/v1/food-sell/post-food-sell").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/food-sell/list").hasAnyRole("GUEST", "USER")
+
+                        // Food Recipe controller
+                        .requestMatchers(HttpMethod.POST, "/api/v1/food-recipe/post-food-recipe").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/food-recipe/list").hasAnyRole("GUEST", "USER")
+
+                        // Favorite controller
+                        .requestMatchers(HttpMethod.POST, "/api/v1/favorite/add-favorite").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/favorite/remove-favorite").hasRole("USER")
+
+                        // User controller
+                        .requestMatchers(HttpMethod.GET, "/api/v1/user/favorites/food-recipes").hasRole("USER")
+
+                        .anyRequest().authenticated())
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .accessDeniedHandler(this::accessDeniedHandler)

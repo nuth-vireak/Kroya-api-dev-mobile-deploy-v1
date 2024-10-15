@@ -1,20 +1,22 @@
 package com.kshrd.kroya_api.service.FoodSell;
 
-import com.kshrd.kroya_api.dto.FoodRecipeDTO;
-import com.kshrd.kroya_api.dto.UserDTO;
 import com.kshrd.kroya_api.entity.FoodRecipeEntity;
 import com.kshrd.kroya_api.entity.FoodSellEntity;
 import com.kshrd.kroya_api.payload.BaseResponse;
+import com.kshrd.kroya_api.payload.FoodSell.FoodSellCardResponse;
 import com.kshrd.kroya_api.payload.FoodSell.FoodSellRequest;
 import com.kshrd.kroya_api.payload.FoodSell.FoodSellResponse;
 import com.kshrd.kroya_api.repository.FoodRecipe.FoodRecipeRepository;
 import com.kshrd.kroya_api.repository.FoodSell.FoodSellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,6 +25,7 @@ public class FoodSellServiceImpl implements FoodSellService {
 
     private final FoodRecipeRepository foodRecipeRepository;
     private final FoodSellRepository foodSellRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public BaseResponse<?> createFoodSell(FoodSellRequest foodSellRequest, Long foodRecipeId) {
@@ -41,28 +44,6 @@ public class FoodSellServiceImpl implements FoodSellService {
 
         FoodRecipeEntity foodRecipeEntity = foodRecipeOptional.get();
 
-        // Map UserEntity to UserDTO
-        UserDTO userDTO = new UserDTO(
-                foodRecipeEntity.getUser().getUserId(),
-                foodRecipeEntity.getUser().getFullName(),
-                foodRecipeEntity.getUser().getProfileImage()
-        );
-
-        // Map FoodRecipeEntity to FoodRecipeDTO
-        FoodRecipeDTO foodRecipeDTO = new FoodRecipeDTO(
-                foodRecipeEntity.getId(),
-                foodRecipeEntity.getPhotoUrl(),
-                foodRecipeEntity.getName(),
-                foodRecipeEntity.getDescription(),
-                foodRecipeEntity.getDurationInMinutes(),
-                foodRecipeEntity.getLevel(),
-                foodRecipeEntity.getIngredients(),
-                foodRecipeEntity.getCookingSteps(),
-                foodRecipeEntity.getIsForSale(),
-                foodRecipeEntity.getCreatedAt(),
-                userDTO  // Minimal user info
-        );
-
         // Create a new FoodSellEntity
         FoodSellEntity foodSellEntity = FoodSellEntity.builder()
                 .foodRecipe(foodRecipeEntity)
@@ -77,21 +58,45 @@ public class FoodSellServiceImpl implements FoodSellService {
         FoodSellEntity savedFoodSell = foodSellRepository.save(foodSellEntity);
         log.info("FoodSell entity saved successfully with ID: {}", savedFoodSell.getId());
 
-        // Build FoodSellResponse with FoodRecipeDTO and UserDTO
-        FoodSellResponse foodSellResponse = new FoodSellResponse(
-                savedFoodSell.getId(),
-                foodRecipeDTO,  // Use FoodRecipeDTO
-                savedFoodSell.getDateCooking(),
-                savedFoodSell.getAmount(),
-                savedFoodSell.getPrice(),
-                savedFoodSell.getLocation(),
-                savedFoodSell.getStatus()
+        // Configure ModelMapper to map FoodRecipeEntity inside FoodSellEntity to FoodRecipeDTO
+        modelMapper.typeMap(FoodSellEntity.class, FoodSellResponse.class).addMappings(mapper ->
+                mapper.map(src -> src.getFoodRecipe(), FoodSellResponse::setFoodRecipeDTO)
         );
+
+        // Use ModelMapper to map FoodSellEntity to FoodSellResponse
+        FoodSellResponse foodSellResponse = modelMapper.map(savedFoodSell, FoodSellResponse.class);
 
         return BaseResponse.builder()
                 .message("FoodSell created successfully")
                 .statusCode(String.valueOf(HttpStatus.CREATED.value()))
                 .payload(foodSellResponse)
+                .build();
+    }
+
+    @Override
+    public BaseResponse<?> getAllFoodSells() {
+        // Fetch all FoodSellEntity records from the database
+        List<FoodSellEntity> foodSellEntities = foodSellRepository.findAll();
+
+        // Map each FoodSellEntity to a FoodSellCardResponse
+        List<FoodSellCardResponse> foodSellCardResponses = foodSellEntities.stream().map(foodSellEntity -> {
+            // Get the relevant fields from FoodSellEntity and map them to FoodSellCardResponse
+            return new FoodSellCardResponse(
+                    foodSellEntity.getId(),                         // ID from FoodSellEntity
+                    foodSellEntity.getFoodRecipe().getPhotoUrl(),  // Photo URL from FoodRecipeEntity
+                    foodSellEntity.getFoodRecipe().getName(),      // Name from FoodRecipeEntity
+                    foodSellEntity.getDateCooking(),               // Cooking date from FoodSellEntity
+                    foodSellEntity.getPrice(),                     // Price from FoodSellEntity
+                    foodSellEntity.getFoodRecipe().getAverageRating(),  // Average rating from FoodRecipeEntity
+                    foodSellEntity.getFoodRecipe().getTotalRaters()     // Total raters from FoodRecipeEntity
+            );
+        }).collect(Collectors.toList());
+
+        // Return the list of FoodSellCardResponse in a BaseResponse
+        return BaseResponse.builder()
+                .message("All FoodSell records fetched successfully")
+                .statusCode(String.valueOf(HttpStatus.OK.value()))
+                .payload(foodSellCardResponses)
                 .build();
     }
 }

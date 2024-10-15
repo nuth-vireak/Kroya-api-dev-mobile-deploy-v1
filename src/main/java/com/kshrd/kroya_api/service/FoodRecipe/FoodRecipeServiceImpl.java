@@ -1,16 +1,11 @@
 package com.kshrd.kroya_api.service.FoodRecipe;
 
-import com.kshrd.kroya_api.entity.CategoryEntity;
-import com.kshrd.kroya_api.entity.CuisineEntity;
-import com.kshrd.kroya_api.entity.FoodRecipeEntity;
-import com.kshrd.kroya_api.entity.UserEntity;
+import com.kshrd.kroya_api.entity.*;
 import com.kshrd.kroya_api.payload.BaseResponse;
-import com.kshrd.kroya_api.payload.FoodRecipe.CookingStep;
-import com.kshrd.kroya_api.payload.FoodRecipe.FoodRecipeRequest;
-import com.kshrd.kroya_api.payload.FoodRecipe.FoodRecipeResponse;
-import com.kshrd.kroya_api.payload.FoodRecipe.Ingredient;
+import com.kshrd.kroya_api.payload.FoodRecipe.*;
 import com.kshrd.kroya_api.repository.Category.CategoryRepository;
 import com.kshrd.kroya_api.repository.Cuisine.CuisineRepository;
+import com.kshrd.kroya_api.repository.Favorite.FavoriteRepository;
 import com.kshrd.kroya_api.repository.FoodRecipe.FoodRecipeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +27,7 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
     private final FoodRecipeRepository foodRecipeRepository;
     private final CategoryRepository categoryRepository;
     private final CuisineRepository cuisineRepository;
+    private final FavoriteRepository favoriteRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -94,7 +91,6 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
                 .category(categoryEntity)  // Set CategoryEntity (using ID)
                 .ingredients(ingredients)
                 .cookingSteps(cookingSteps)
-                .isForSale(foodRecipeRequest.getIsForSale())
                 .user(currentUser)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -125,6 +121,66 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
                 .payload(foodRecipeResponse)
                 .message("Recipe created successfully")
                 .statusCode("201")
+                .build();
+    }
+
+    @Override
+    public BaseResponse<?> getAllFoodRecipes() {
+
+        // Get the currently authenticated user
+        UserEntity currentUser = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("User authenticated: {}", currentUser.getEmail());
+
+        // Check if the user has the role ROLE_USER or ROLE_GUEST
+        boolean isUser = currentUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
+        boolean isGuest = currentUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_GUEST"));
+
+        // Fetch all FoodRecipeEntity records from the database
+        List<FoodRecipeEntity> foodRecipeEntities = foodRecipeRepository.findAll();
+
+        // For ROLE_USER: Fetch the user's favorite recipes
+        List<Long> userFavoriteRecipeIds;
+        if (isUser) {
+            // Fetch the user's favorite recipes
+            List<FavoriteEntity> userFavorites = favoriteRepository.findByUserAndFoodRecipeIsNotNull(currentUser);
+            userFavoriteRecipeIds = userFavorites.stream()
+                    .map(favorite -> favorite.getFoodRecipe().getId())
+                    .toList();
+        } else {
+            userFavoriteRecipeIds = new ArrayList<>();
+        }
+
+        // Map each FoodRecipeEntity to FoodRecipeCardResponse using ModelMapper
+        List<FoodRecipeCardResponse> foodRecipeCardResponses = foodRecipeEntities.stream()
+                .map(foodRecipeEntity -> {
+                    // Map using ModelMapper
+                    FoodRecipeCardResponse response = modelMapper.map(foodRecipeEntity, FoodRecipeCardResponse.class);
+
+                    // For ROLE_USER, check if the recipe is in the user's favorite list
+                    if (isUser && userFavoriteRecipeIds.contains(foodRecipeEntity.getId())) {
+                        response.setIsFavorite(true);
+                    } else if (isGuest) {
+                        // For ROLE_GUEST, always set isFavorite to false
+                        response.setIsFavorite(false);
+                    } else {
+                        // For non-favorite recipes for a regular user
+                        response.setIsFavorite(false);
+                    }
+
+                    // Additional logic for price if applicable (e.g., FoodSellEntity relationship)
+                    // response.setPrice(foodRecipeEntity.getFoodSell() != null ? foodRecipeEntity.getFoodSell().getPrice() : null);
+
+                    return response;
+                })
+                .toList();
+
+        // Return the response with the list of FoodRecipeCardResponse objects
+        return BaseResponse.builder()
+                .message("All food recipes fetched successfully")
+                .statusCode(String.valueOf(HttpStatus.OK.value()))
+                .payload(foodRecipeCardResponses)
                 .build();
     }
 }

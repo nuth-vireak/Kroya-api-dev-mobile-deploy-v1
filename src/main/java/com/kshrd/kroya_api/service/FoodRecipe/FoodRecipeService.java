@@ -5,4 +5,6 @@ import com.kshrd.kroya_api.payload.FoodRecipe.FoodRecipeRequest;
 
 public interface FoodRecipeService {
     BaseResponse<?> createRecipe(FoodRecipeRequest foodRecipeRequest);
+
+    BaseResponse<?> getAllFoodRecipes();
 }

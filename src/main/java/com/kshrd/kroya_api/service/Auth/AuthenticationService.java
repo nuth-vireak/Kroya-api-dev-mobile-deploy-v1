@@ -28,8 +28,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -145,7 +147,7 @@ public class AuthenticationService {
     // Helper method to revoke all tokens for a user (used when a user logs in)
     private void revokeAllUserTokens(UserEntity user) {
         log.debug("Revoking all valid tokens for user: {}", user.getEmail());
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty()) {
             log.debug("No valid tokens found for user: {}", user.getEmail());
             return;
@@ -395,5 +397,56 @@ public class AuthenticationService {
                 .message("Password reset successfully")
                 .statusCode("200")
                 .build();
+    }
+
+    public BaseResponse<?> loginAsGuest() {
+
+        log.info("Processing login as guest");
+
+        // Generate random email, full name, and password for the guest user
+        String randomEmail = generateRandomEmail();
+        String randomFullName = "Guest_" + UUID.randomUUID().toString().substring(0, 8);
+        String randomPassword = generateRandomPassword(8);  // Generate an 8-character password
+
+        // Create a new guest user
+        log.info("Creating new guest user with email: {}", randomEmail);
+
+        UserEntity guestUser = new UserEntity();
+        guestUser.setEmail(randomEmail);
+        guestUser.setFullName(randomFullName);
+        guestUser.setPassword(passwordEncoder.encode(randomPassword));  // Encode the generated password
+        guestUser.setRole("ROLE_GUEST");  // Assign the guest role
+        guestUser.setCreatedAt(LocalDateTime.now());
+
+        // Save the new guest user to the database
+        userRepository.save(guestUser);
+
+        log.info("Guest user created successfully with email: {}", randomEmail);
+
+        // Step 3: Authenticate the guest user using the generated credentials
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest();
+        authenticationRequest.setEmail(randomEmail);
+        authenticationRequest.setPassword(randomPassword);  // Use the generated password
+
+        // Step 4: Call the authenticate method to generate the tokens
+        return authenticate(authenticationRequest);
+    }
+
+    // Helper method to generate a random email
+    private String generateRandomEmail() {
+        String uuid = UUID.randomUUID().toString().substring(0, 8);  // Generate random UUID and shorten it
+        return "guest_" + uuid + "@kroya.com";
+    }
+
+    // Helper method to generate a random password with specified length
+    private String generateRandomPassword(int length) {
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder(length);
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for (int i = 0; i < length; i++) {
+            password.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return password.toString();
     }
 }

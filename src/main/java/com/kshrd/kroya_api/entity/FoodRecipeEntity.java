@@ -49,9 +49,6 @@ public class FoodRecipeEntity {
     @Column(name = "cooking_steps", columnDefinition = "jsonb")
     private List<CookingStep> cookingSteps;
 
-    @Column(name = "is_for_sale")
-    private Boolean isForSale;
-
     @Column(name = "total_raters")
     private Integer totalRaters;
 

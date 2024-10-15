@@ -26,8 +26,8 @@ public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Column(name = "user_id")
-    private Integer userId;
+    @Column(name = "id")
+    private Integer id;
 
     @Column(name = "user_name", length = 250, nullable = true)
     private String fullName;
@@ -47,7 +47,7 @@ public class UserEntity implements UserDetails {
     private String location;
 
     @Column(name = "role", length = 20, nullable = true)
-    private String role = "ROLE_USER";
+    private String role;
 
     @Column(name = "created_at", nullable = true, updatable = false, columnDefinition = "timestamp default now()")
     private LocalDateTime createdAt;

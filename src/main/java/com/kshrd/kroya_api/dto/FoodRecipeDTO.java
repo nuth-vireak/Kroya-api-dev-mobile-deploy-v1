@@ -21,7 +21,6 @@ public class FoodRecipeDTO {
     private String level;
     private List<Ingredient> ingredients;
     private List<CookingStep> cookingSteps;
-    private Boolean isForSale;
     private LocalDateTime createdAt;
     private UserDTO user;
 }

@@ -4,19 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FoodRecipeRequest {
+public class FoodRecipeCardResponse {
+    private Long id;
     private String photoUrl;
     private String name;
     private String description;
-    private Integer durationInMinutes;
+    private Double price;
     private String level;
-    private Long cuisineId;
-    private Long categoryId;
-    private List<Ingredient> ingredients;
-    private List<CookingStep> cookingSteps;
+    private Double averageRating;
+    private Integer totalRaters;
+    private Boolean isFavorite;
 }
