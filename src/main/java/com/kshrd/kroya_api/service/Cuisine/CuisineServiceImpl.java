@@ -1,5 +1,6 @@
 package com.kshrd.kroya_api.service.Cuisine;
 
+import com.kshrd.kroya_api.entity.CategoryEntity;
 import com.kshrd.kroya_api.entity.CuisineEntity;
 import com.kshrd.kroya_api.payload.BaseResponse;
 import com.kshrd.kroya_api.payload.Cuisine.CuisineRequest;

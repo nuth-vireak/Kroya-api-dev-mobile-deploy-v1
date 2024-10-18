@@ -15,4 +15,12 @@ public interface FavoriteRepository extends JpaRepository<FavoriteEntity, Long> 
     Optional<FavoriteEntity> findByUserAndFoodSell(UserEntity user, FoodSellEntity foodSell);
 
     List<FavoriteEntity> findByUserAndFoodRecipeIsNotNull(UserEntity currentUser);
+
+    List<FavoriteEntity> findByUserAndFoodSellIsNotNull(UserEntity currentUser);
+
+    List<FavoriteEntity> findByUser(UserEntity currentUser);
+
+    boolean existsByUserAndFoodRecipe(UserEntity currentUser, FoodRecipeEntity savedRecipe);
+
+    boolean existsByUserAndFoodSell(UserEntity currentUser, FoodSellEntity savedFoodSell);
 }

@@ -31,4 +31,8 @@ public class FavoriteController {
         return favoriteService.unsavedFoodFromFavorite(foodId, itemType);
     }
 
+    @GetMapping("/all")
+    public BaseResponse<?> getAllFavoriteFoodsByCurrentUser() {
+        return favoriteService.getAllFavoriteFoodsByCurrentUser();
+    }
 }

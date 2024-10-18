@@ -53,29 +53,14 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html"
                         )
                         .permitAll()
-
-                        // Address controller
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/address/update/{id}").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/address/create").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/address/{id}").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/address/list").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/address/delete/{id}").hasRole("USER")
-
-                        // Food sell controller
-                        .requestMatchers(HttpMethod.POST, "/api/v1/food-sell/post-food-sell").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/food-sell/list").hasAnyRole("GUEST", "USER")
-
-                        // Food Recipe controller
-                        .requestMatchers(HttpMethod.POST, "/api/v1/food-recipe/post-food-recipe").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/food-recipe/list").hasAnyRole("GUEST", "USER")
-
-                        // Favorite controller
-                        .requestMatchers(HttpMethod.POST, "/api/v1/favorite/add-favorite").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/favorite/remove-favorite").hasRole("USER")
-
-                        // User controller
-                        .requestMatchers(HttpMethod.GET, "/api/v1/user/favorites/food-recipes").hasRole("USER")
-
+                        .requestMatchers(
+                                "/api/v1/address/**",
+                                "/api/v1/food-sell/**",
+                                "/api/v1/food-recipe/**",
+                                "/api/v1/favorite/**",
+                                "/api/v1/user/**",
+                                "/api/v1/foods/**"
+                        ).hasRole("USER")
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling

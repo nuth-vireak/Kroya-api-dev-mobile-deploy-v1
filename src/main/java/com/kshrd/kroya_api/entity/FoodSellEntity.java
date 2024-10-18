@@ -1,6 +1,8 @@
 package com.kshrd.kroya_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kshrd.kroya_api.enums.ItemType;
 import jakarta.persistence.*;
 import lombok.*;
 

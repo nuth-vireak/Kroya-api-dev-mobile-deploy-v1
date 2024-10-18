@@ -3,10 +3,12 @@ package com.kshrd.kroya_api.service.FoodRecipe;
 import com.kshrd.kroya_api.entity.*;
 import com.kshrd.kroya_api.payload.BaseResponse;
 import com.kshrd.kroya_api.payload.FoodRecipe.*;
+import com.kshrd.kroya_api.dto.PhotoDTO;
 import com.kshrd.kroya_api.repository.Category.CategoryRepository;
 import com.kshrd.kroya_api.repository.Cuisine.CuisineRepository;
 import com.kshrd.kroya_api.repository.Favorite.FavoriteRepository;
 import com.kshrd.kroya_api.repository.FoodRecipe.FoodRecipeRepository;
+import com.kshrd.kroya_api.repository.FoodSell.FoodSellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -15,9 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class FoodRecipeServiceImpl implements FoodRecipeService {
 
     private final FoodRecipeRepository foodRecipeRepository;
+    private final FoodSellRepository foodSellRepository;
     private final CategoryRepository categoryRepository;
     private final CuisineRepository cuisineRepository;
     private final FavoriteRepository favoriteRepository;
@@ -82,7 +85,6 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
 
         // Map the RecipeRequest to RecipeEntity
         FoodRecipeEntity foodRecipeEntity = FoodRecipeEntity.builder()
-                .photoUrl(foodRecipeRequest.getPhotoUrl())
                 .name(foodRecipeRequest.getName())
                 .description(foodRecipeRequest.getDescription())
                 .durationInMinutes(foodRecipeRequest.getDurationInMinutes())
@@ -95,11 +97,22 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        // Log before saving the recipe
-        log.info("Saving recipe: {}", foodRecipeRequest.getName());
-
-        // Save the recipe to the database
+        // Save the recipe to the database first
         FoodRecipeEntity savedRecipe = foodRecipeRepository.save(foodRecipeEntity);
+
+        // Process photo entities from the request
+        List<PhotoEntity> photoEntities = foodRecipeRequest.getPhoto().stream()
+                .map(photoEntity -> {
+                    photoEntity.setFoodRecipe(savedRecipe); // Set the association with the saved recipe
+                    return photoEntity;
+                })
+                .collect(Collectors.toList());
+
+        // Set the photos to the saved recipe
+        savedRecipe.setPhotos(photoEntities);
+
+        // Save the recipe again to persist the photos
+        foodRecipeRepository.save(savedRecipe);
 
         // Log the newly created recipe's ID
         log.info("Recipe saved successfully with ID: {}", savedRecipe.getId());
@@ -107,14 +120,21 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
         // Map the saved entity to RecipeResponse using ModelMapper
         FoodRecipeResponse foodRecipeResponse = modelMapper.map(savedRecipe, FoodRecipeResponse.class);
 
-        // Log the response being sent back
-        log.info("Recipe Response - ID: {}, Name: {}", foodRecipeResponse.getId(), foodRecipeResponse.getName());
+        // Map photo entities to PhotoResponse objects
+        List<PhotoDTO> photoRespons = savedRecipe.getPhotos().stream()
+                .map(photoEntity -> new PhotoDTO(photoEntity.getId(), photoEntity.getPhoto()))
+                .collect(Collectors.toList());
+        foodRecipeResponse.setPhoto(photoRespons);
 
         // Set category name in the response
         foodRecipeResponse.setCategoryName(categoryEntity.getCategoryName());
 
         // Set cuisine name in the response
         foodRecipeResponse.setCuisineName(cuisineEntity.getCuisineName());
+
+        // Check if this recipe is a favorite for the current user
+        boolean isFavorite = favoriteRepository.existsByUserAndFoodRecipe(currentUser, savedRecipe);
+        foodRecipeResponse.setIsFavorite(isFavorite);
 
         // Return a success response with the saved recipe as the payload
         return BaseResponse.builder()
@@ -131,46 +151,32 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
         UserEntity currentUser = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("User authenticated: {}", currentUser.getEmail());
 
-        // Check if the user has the role ROLE_USER or ROLE_GUEST
-        boolean isUser = currentUser.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
-        boolean isGuest = currentUser.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_GUEST"));
-
         // Fetch all FoodRecipeEntity records from the database
         List<FoodRecipeEntity> foodRecipeEntities = foodRecipeRepository.findAll();
 
-        // For ROLE_USER: Fetch the user's favorite recipes
-        List<Long> userFavoriteRecipeIds;
-        if (isUser) {
-            // Fetch the user's favorite recipes
-            List<FavoriteEntity> userFavorites = favoriteRepository.findByUserAndFoodRecipeIsNotNull(currentUser);
-            userFavoriteRecipeIds = userFavorites.stream()
-                    .map(favorite -> favorite.getFoodRecipe().getId())
-                    .toList();
-        } else {
-            userFavoriteRecipeIds = new ArrayList<>();
-        }
+        // Fetch the user's favorite recipes
+        List<FavoriteEntity> userFavorites = favoriteRepository.findByUserAndFoodRecipeIsNotNull(currentUser);
+        List<Long> userFavoriteRecipeIds = userFavorites.stream()
+                .map(favorite -> favorite.getFoodRecipe().getId())
+                .toList();
 
-        // Map each FoodRecipeEntity to FoodRecipeCardResponse using ModelMapper
-        List<FoodRecipeCardResponse> foodRecipeCardResponses = foodRecipeEntities.stream()
+        // Filter out FoodRecipeEntities that have a related FoodSellEntity
+        List<FoodRecipeCardResponse> foodRecipeResponses = foodRecipeEntities.stream()
+                .filter(foodRecipeEntity -> !foodSellRepository.existsByFoodRecipe(foodRecipeEntity))
                 .map(foodRecipeEntity -> {
-                    // Map using ModelMapper
+                    // Map to FoodRecipeCardResponse using ModelMapper
                     FoodRecipeCardResponse response = modelMapper.map(foodRecipeEntity, FoodRecipeCardResponse.class);
 
-                    // For ROLE_USER, check if the recipe is in the user's favorite list
-                    if (isUser && userFavoriteRecipeIds.contains(foodRecipeEntity.getId())) {
-                        response.setIsFavorite(true);
-                    } else if (isGuest) {
-                        // For ROLE_GUEST, always set isFavorite to false
-                        response.setIsFavorite(false);
-                    } else {
-                        // For non-favorite recipes for a regular user
-                        response.setIsFavorite(false);
-                    }
+                    // Set isFavorite if it's in the user's favorites
+                    response.setIsFavorite(userFavoriteRecipeIds.contains(foodRecipeEntity.getId()));
 
-                    // Additional logic for price if applicable (e.g., FoodSellEntity relationship)
-                    // response.setPrice(foodRecipeEntity.getFoodSell() != null ? foodRecipeEntity.getFoodSell().getPrice() : null);
+                    // Map photos to PhotoResponse
+                    List<PhotoDTO> photoResponses = foodRecipeEntity.getPhotos().stream()
+                            .map(photoEntity -> new PhotoDTO(photoEntity.getId(), photoEntity.getPhoto()))
+                            .collect(Collectors.toList());
+
+                    // Set the photo field in the response
+                    response.setPhoto(photoResponses);
 
                     return response;
                 })
@@ -180,7 +186,10 @@ public class FoodRecipeServiceImpl implements FoodRecipeService {
         return BaseResponse.builder()
                 .message("All food recipes fetched successfully")
                 .statusCode(String.valueOf(HttpStatus.OK.value()))
-                .payload(foodRecipeCardResponses)
+                .payload(foodRecipeResponses)
                 .build();
     }
+
+
+
 }

@@ -28,11 +28,11 @@ public class AuthController {
         authenticationService.refreshToken(request, response);
     }
 
-    //Login as Guest
-    @PostMapping("/login-as-guest")
-    public BaseResponse<?> loginAsGuest() {
-        return authenticationService.loginAsGuest();
-    }
+//    //Login as Guest
+//    @PostMapping("/login-as-guest")
+//    public BaseResponse<?> loginAsGuest() {
+//        return authenticationService.loginAsGuest();
+//    }
 
     // Step 1: Check if Email Exist (for the first screen in your UI)
     @GetMapping("/check-email-exist")

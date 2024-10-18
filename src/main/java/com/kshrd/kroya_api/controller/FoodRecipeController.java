@@ -3,6 +3,7 @@ package com.kshrd.kroya_api.controller;
 import com.kshrd.kroya_api.payload.BaseResponse;
 import com.kshrd.kroya_api.payload.FoodRecipe.FoodRecipeRequest;
 import com.kshrd.kroya_api.service.FoodRecipe.FoodRecipeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

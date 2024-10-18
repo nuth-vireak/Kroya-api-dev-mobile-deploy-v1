@@ -1,6 +1,8 @@
 package com.kshrd.kroya_api.payload.FoodSell;
 
 import com.kshrd.kroya_api.dto.FoodRecipeDTO;
+import com.kshrd.kroya_api.dto.UserDTO;
+import com.kshrd.kroya_api.entity.FoodRecipeEntity;
 import com.kshrd.kroya_api.enums.ItemType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,4 +22,5 @@ public class FoodSellResponse {
     private String location;
     private Boolean status;
     private ItemType itemType = ItemType.FOOD_SELL;
+    private Boolean isFavorite;
 }

@@ -1,15 +1,28 @@
 package com.kshrd.kroya_api.service.Category;
 
 import com.kshrd.kroya_api.entity.CategoryEntity;
+import com.kshrd.kroya_api.entity.FoodRecipeEntity;
+import com.kshrd.kroya_api.entity.FoodSellEntity;
+import com.kshrd.kroya_api.entity.UserEntity;
 import com.kshrd.kroya_api.payload.BaseResponse;
 import com.kshrd.kroya_api.payload.Category.CategoryRequest;
+import com.kshrd.kroya_api.payload.FoodRecipe.FoodRecipeCardResponse;
+import com.kshrd.kroya_api.payload.FoodSell.FoodSellCardResponse;
 import com.kshrd.kroya_api.repository.Category.CategoryRepository;
+import com.kshrd.kroya_api.repository.Favorite.FavoriteRepository;
+import com.kshrd.kroya_api.repository.FoodRecipe.FoodRecipeRepository;
+import com.kshrd.kroya_api.repository.FoodSell.FoodSellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -58,6 +71,4 @@ public class CategoryServiceImp implements CategoryService {
                 .statusCode(String.valueOf(HttpStatus.OK.value()))
                 .build();
     }
-
-
 }

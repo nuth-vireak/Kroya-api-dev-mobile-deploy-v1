@@ -7,4 +7,6 @@ public interface FavoriteService {
     BaseResponse<?> saveFoodToFavorite(Long foodId, ItemType itemType);
 
     BaseResponse<?> unsavedFoodFromFavorite(Long foodId, ItemType itemType);
+
+    BaseResponse<?> getAllFavoriteFoodsByCurrentUser();
 }

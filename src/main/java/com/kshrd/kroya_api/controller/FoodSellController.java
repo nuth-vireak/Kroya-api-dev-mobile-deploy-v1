@@ -1,6 +1,7 @@
 package com.kshrd.kroya_api.controller;
 
 import com.kshrd.kroya_api.payload.BaseResponse;
+import com.kshrd.kroya_api.payload.FoodRecipe.FoodRecipeRequest;
 import com.kshrd.kroya_api.payload.FoodSell.FoodSellRequest;
 import com.kshrd.kroya_api.service.FoodSell.FoodSellService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +25,6 @@ public class FoodSellController {
     }
 
     @GetMapping("/list")
-    @Operation(summary = "----------------------> Not Yet fixed")
     public BaseResponse<?> getAllFoodSells() {
         return foodSellService.getAllFoodSells();
     }

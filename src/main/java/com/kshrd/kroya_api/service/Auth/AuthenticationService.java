@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -251,8 +252,8 @@ public class AuthenticationService {
         emailService.sendEmail(email, otp);
 
         return BaseResponse.builder()
-                .payload(email)
-                .message(otp)
+                .payload("Email: " + email + ", OTP: " + otp)
+                .message("OTP generated and sent successfully")
                 .statusCode("200")
                 .build();
     }
@@ -314,11 +315,6 @@ public class AuthenticationService {
     public BaseResponse<?> createPassword(PasswordRequest passwordRequest) {
         log.debug("Create password for email: {}", passwordRequest.getEmail());
 
-        // Validate password and confirm password
-        if (!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())) {
-            throw new CustomExceptionSecurity(ResponseMessage.PASSWORD_NOT_MATCH);
-        }
-
         // Find user by email
         var user = userRepository.findByEmail(passwordRequest.getEmail());
         if (user == null) {
@@ -376,11 +372,6 @@ public class AuthenticationService {
 
         log.info("Processing reset password for email: {}", passwordRequest.getEmail());
 
-        // Validate if the passwords match
-        if (!passwordRequest.getNewPassword().equals(passwordRequest.getConfirmPassword())) {
-            throw new CustomExceptionSecurity(ResponseMessage.PASSWORD_NOT_MATCH);
-        }
-
         // Find the user by email
         var user = userRepository.findByEmail(passwordRequest.getEmail());
         if (user == null) {
@@ -399,54 +390,54 @@ public class AuthenticationService {
                 .build();
     }
 
-    public BaseResponse<?> loginAsGuest() {
-
-        log.info("Processing login as guest");
-
-        // Generate random email, full name, and password for the guest user
-        String randomEmail = generateRandomEmail();
-        String randomFullName = "Guest_" + UUID.randomUUID().toString().substring(0, 8);
-        String randomPassword = generateRandomPassword(8);  // Generate an 8-character password
-
-        // Create a new guest user
-        log.info("Creating new guest user with email: {}", randomEmail);
-
-        UserEntity guestUser = new UserEntity();
-        guestUser.setEmail(randomEmail);
-        guestUser.setFullName(randomFullName);
-        guestUser.setPassword(passwordEncoder.encode(randomPassword));  // Encode the generated password
-        guestUser.setRole("ROLE_GUEST");  // Assign the guest role
-        guestUser.setCreatedAt(LocalDateTime.now());
-
-        // Save the new guest user to the database
-        userRepository.save(guestUser);
-
-        log.info("Guest user created successfully with email: {}", randomEmail);
-
-        // Step 3: Authenticate the guest user using the generated credentials
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest();
-        authenticationRequest.setEmail(randomEmail);
-        authenticationRequest.setPassword(randomPassword);  // Use the generated password
-
-        // Step 4: Call the authenticate method to generate the tokens
-        return authenticate(authenticationRequest);
-    }
-
-    // Helper method to generate a random email
-    private String generateRandomEmail() {
-        String uuid = UUID.randomUUID().toString().substring(0, 8);  // Generate random UUID and shorten it
-        return "guest_" + uuid + "@kroya.com";
-    }
-
-    // Helper method to generate a random password with specified length
-    private String generateRandomPassword(int length) {
-        SecureRandom random = new SecureRandom();
-        StringBuilder password = new StringBuilder(length);
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-        for (int i = 0; i < length; i++) {
-            password.append(characters.charAt(random.nextInt(characters.length())));
-        }
-        return password.toString();
-    }
+//    public BaseResponse<?> loginAsGuest() {
+//
+//        log.info("Processing login as guest");
+//
+//        // Generate random email, full name, and password for the guest user
+//        String randomEmail = generateRandomEmail();
+//        String randomFullName = "Guest_" + UUID.randomUUID().toString().substring(0, 8);
+//        String randomPassword = generateRandomPassword(8);  // Generate an 8-character password
+//
+//        // Create a new guest user
+//        log.info("Creating new guest user with email: {}", randomEmail);
+//
+//        UserEntity guestUser = new UserEntity();
+//        guestUser.setEmail(randomEmail);
+//        guestUser.setFullName(randomFullName);
+//        guestUser.setPassword(passwordEncoder.encode(randomPassword));  // Encode the generated password
+//        guestUser.setRole("ROLE_GUEST");  // Assign the guest role
+//        guestUser.setCreatedAt(LocalDateTime.now());
+//
+//        // Save the new guest user to the database
+//        userRepository.save(guestUser);
+//
+//        log.info("Guest user created successfully with email: {}", randomEmail);
+//
+//        // Step 3: Authenticate the guest user using the generated credentials
+//        AuthenticationRequest authenticationRequest = new AuthenticationRequest();
+//        authenticationRequest.setEmail(randomEmail);
+//        authenticationRequest.setPassword(randomPassword);  // Use the generated password
+//
+//        // Step 4: Call the authenticate method to generate the tokens
+//        return authenticate(authenticationRequest);
+//    }
+//
+//    // Helper method to generate a random email
+//    private String generateRandomEmail() {
+//        String uuid = UUID.randomUUID().toString().substring(0, 8);  // Generate random UUID and shorten it
+//        return "guest_" + uuid + "@kroya.com";
+//    }
+//
+//    // Helper method to generate a random password with specified length
+//    private String generateRandomPassword(int length) {
+//        SecureRandom random = new SecureRandom();
+//        StringBuilder password = new StringBuilder(length);
+//        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//
+//        for (int i = 0; i < length; i++) {
+//            password.append(characters.charAt(random.nextInt(characters.length())));
+//        }
+//        return password.toString();
+//    }
 }

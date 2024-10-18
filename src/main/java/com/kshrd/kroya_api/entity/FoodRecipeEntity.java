@@ -2,6 +2,7 @@ package com.kshrd.kroya_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kshrd.kroya_api.enums.ItemType;
 import com.kshrd.kroya_api.payload.FoodRecipe.CookingStep;
 import com.kshrd.kroya_api.payload.FoodRecipe.Ingredient;
 import jakarta.persistence.*;
@@ -25,9 +26,6 @@ public class FoodRecipeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
-
-    @Column(name = "photo_url")
-    private String photoUrl;
 
     @Column(name = "name")
     private String name;
@@ -72,4 +70,8 @@ public class FoodRecipeEntity {
     @JoinColumn(name = "cuisine_id")
     @JsonIgnore
     private CuisineEntity cuisine;
+
+    @OneToMany(mappedBy = "foodRecipe", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<PhotoEntity> photos;
+
 }

@@ -1,5 +1,6 @@
 package com.kshrd.kroya_api.dto;
 
+import com.kshrd.kroya_api.enums.ItemType;
 import com.kshrd.kroya_api.payload.FoodRecipe.CookingStep;
 import com.kshrd.kroya_api.payload.FoodRecipe.Ingredient;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class FoodRecipeDTO {
     private Long id;
-    private String photoUrl;
+    private List<PhotoDTO> photo;
     private String name;
     private String description;
     private Integer durationInMinutes;
