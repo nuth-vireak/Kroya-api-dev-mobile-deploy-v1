@@ -252,8 +252,8 @@ public class AuthenticationService {
         emailService.sendEmail(email, otp);
 
         return BaseResponse.builder()
-                .payload("Email: " + email + ", OTP: " + otp)
-                .message("OTP generated and sent successfully")
+                .payload(email)
+                .message(otp)
                 .statusCode("200")
                 .build();
     }
